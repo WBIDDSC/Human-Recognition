@@ -1,25 +1,35 @@
-import cv2
-import pandas
+#this program displays two video streams. "Motion Frame" places a red box around a pixel difference between frames, while
+#the "Faces Frame" places a green box around things it recognizes as faces. Press 'p' to take a photo after entering 'y'.
+#The video stream will then quit and show the saved photo. Enter 'y' again when prompted to resume video stream and photo taking.
+
+#import necessary libraries
+import cv2 #make sure to have opencv-python package installed (If not this can be done via "pip install opencv-python")
+import pandas #make sure to have the panda package installed (IF not this can be done via "pip install pandas")
 import sys
+import os.path
 import logging as log
 import datetime as dt
 from time import sleep
+from os import path
 
+#Configura webcam
 first_frame=None
-
 cascPath = "haarcascade_frontalface_default.xml"
 faceCascade = cv2.CascadeClassifier(cascPath)
 log.basicConfig(filename='webcam.log',level=log.INFO)
 
+#Initial prompt to user to enter video stream and instructions on taking photo
 photoYorN = input("Do you want to take a photo? (enter y for yes or n for no):")
 print("Enter p to take a photo or q to quit: ")
-photoNum = 1
+photoNum = 1 #will hold the photo number so that program creates a unique picture file
 
 while(photoYorN == 'y'):
+    #create live stream video feed object
     video_capture = cv2.VideoCapture(0)
     anterior = 0
 
     while (True):
+        #check to see if camera is succesfully opened by program for photos
         if not video_capture.isOpened():
             print('Unable to load camera.')
             sleep(5)
@@ -35,12 +45,14 @@ while(photoYorN == 'y'):
             first_frame=gray
             continue
 
+        #frame which holds the difference between the two frames 
         delta_frame=cv2.absdiff(first_frame,gray)
         thresh_frame=cv2.threshold(delta_frame,30,255,cv2.THRESH_BINARY)[1]
 
         thresh_frame=cv2.dilate(thresh_frame,None,iterations=3)
         (cnts,_)=cv2.findContours(thresh_frame.copy(),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 
+        #create rectangle which higlights pixel differences between frames due to motion
         for contour in cnts:
             if cv2.contourArea(contour)<10000:
                 continue
@@ -48,6 +60,7 @@ while(photoYorN == 'y'):
             (x,y,w,h)=cv2.boundingRect(contour)
             cv2.rectangle(color_frame,(x,y),(x+w,y+h),(0,0,255),2)
 
+        #display motion frame
         cv2.imshow("Motion Frame", color_frame)
 
 
@@ -76,7 +89,9 @@ while(photoYorN == 'y'):
         cv2.imshow("Faces Frame", frame)
 
         if cv2.waitKey(1) & 0xFF == ord('p'): 
-        
+        #take photo, make sure to have "Faces Frame" stream selected
+            while(path.isfile("mission_img" + str(photoNum) + ".jpg")):
+                photoNum += 1
             check, frame = video_capture.read()
             cv2.imshow("Capturing", frame)
             cv2.imwrite(filename="mission_img" + str(photoNum) + ".jpg", img=frame)
@@ -91,6 +106,7 @@ while(photoYorN == 'y'):
             break
 
         elif cv2.waitKey(1) & 0xFF == ord('q'):
+        #quit video video stream
             print("Turning off camera.")
             video_capture.release()
             print("Camera off.")
