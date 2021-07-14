@@ -17,11 +17,11 @@ pip install pandas
 ```bash
 python3 webcam.py
 ```
-For Capture Image click "s" and the image will save in project directory. 
+For Capture Image click "p" and the image will save in project directory. 
 
 
 ![alt text](https://raw.githubusercontent.com/Antu7/webcam-face-detection-with-image-capture/master/example.jpg)
-
+![alt text](motionDetector.png)
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
