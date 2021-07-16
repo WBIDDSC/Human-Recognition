@@ -33,7 +33,7 @@ print("Enter p to take a photo, s to switch camera index, or q to quit: ")
 while(photoYorN == 'y'):
     #create live stream video feed object
 
-    video_capture = cv2.VideoCapture(camNum)
+    video_capture = cv2.VideoCapture(int(camNum))
     anterior = 0
 
     while (True):
