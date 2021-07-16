@@ -12,20 +12,28 @@ import datetime as dt
 from time import sleep
 from os import path
 
-#Configura webcam
-first_frame=None
+#Configure webcam
+first_frame = None
 cascPath = "haarcascade_frontalface_default.xml"
 faceCascade = cv2.CascadeClassifier(cascPath)
 log.basicConfig(filename='webcam.log',level=log.INFO)
 
+photoNum=1 #will hold the photo number so that program creates a unique picture file
+
+#allows user to set what camera they have connected that they wish to use
+camNum = "0"
+camNum = input("Enter the camera index for camera that will take photos (0 is builtin camera usually): ") 
+while(camNum.isdigit() == False):
+      camNum=input("Enter a digit for camera index: ")
+
 #Initial prompt to user to enter video stream and instructions on taking photo
 photoYorN = input("Do you want to take a photo? (enter y for yes or n for no):")
-print("Enter p to take a photo or q to quit: ")
-photoNum = 1 #will hold the photo number so that program creates a unique picture file
+print("Enter p to take a photo, s to switch camera index, or q to quit: ")
 
 while(photoYorN == 'y'):
     #create live stream video feed object
-    video_capture = cv2.VideoCapture(0)
+
+    video_capture = cv2.VideoCapture(camNum)
     anterior = 0
 
     while (True):
@@ -36,35 +44,35 @@ while(photoYorN == 'y'):
             pass
 
         #color frame for motion detection
-        check,color_frame=video_capture.read()
-        status=0
-        gray=cv2.cvtColor(color_frame,cv2.COLOR_BGR2GRAY)
-        gray=cv2.GaussianBlur(gray,(21,21),0)
+        check,color_frame = video_capture.read()
+        status = 0
+        gray = cv2.cvtColor(color_frame,cv2.COLOR_BGR2GRAY)
+        gray = cv2.GaussianBlur(gray,(21,21),0)
 
         if first_frame is None:
             first_frame=gray
             continue
 
         #frame which holds the difference between the two frames 
-        delta_frame=cv2.absdiff(first_frame,gray)
-        thresh_frame=cv2.threshold(delta_frame,30,255,cv2.THRESH_BINARY)[1]
+        delta_frame = cv2.absdiff(first_frame,gray)
+        thresh_frame = cv2.threshold(delta_frame,30,255,cv2.THRESH_BINARY)[1]
 
-        thresh_frame=cv2.dilate(thresh_frame,None,iterations=3)
-        (cnts,_)=cv2.findContours(thresh_frame.copy(),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+        thresh_frame = cv2.dilate(thresh_frame,None,iterations=3)
+        (cnts,_) = cv2.findContours(thresh_frame.copy(),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 
         #create rectangle which higlights pixel differences between frames due to motion
         for contour in cnts:
             if cv2.contourArea(contour)<10000:
                 continue
             status=1
-            (x,y,w,h)=cv2.boundingRect(contour)
+            (x,y,w,h) = cv2.boundingRect(contour)
             cv2.rectangle(color_frame,(x,y),(x+w,y+h),(0,0,255),2)
 
         #display motion frame
         cv2.imshow("Motion Frame", color_frame)
 
 
-        # Capture frame-by-frame
+        # Capture frame-by-frame for face
         ret, frame = video_capture.read()
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -100,7 +108,6 @@ while(photoYorN == 'y'):
             img_new = cv2.imshow("Captured Image", img_new)
             cv2.waitKey(1650)
             print("Image Saved")
-            print("Program End")
             cv2.destroyAllWindows()
             photoNum += 1
             break
@@ -110,8 +117,17 @@ while(photoYorN == 'y'):
             print("Turning off camera.")
             video_capture.release()
             print("Camera off.")
-            print("Program ended.")
             cv2.destroyAllWindows()
+            break
+        elif cv2.waitKey(1) & 0xFF == ord('s'):
+        #quit video after getting new camera index
+            print("Turning off currentcamera to switch to another.")
+            video_capture.release()
+            print("Current camera off.")
+            cv2.destroyAllWindows()
+            camNum = input("Enter the camera index for camera that will take photos (0 is builtin camera usually): ")
+            while(camNum.isdigit() == False):
+                camNum = input("Enter a digit for camera index: ")
             break
 
     #reprompt user
