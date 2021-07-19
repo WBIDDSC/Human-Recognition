@@ -30,7 +30,7 @@ while(camNum.isdigit() == False): #repeat until user enters a digit
 
 #Initial prompt to user to enter video stream and instructions on taking photo
 photoYorN = input("Do you want to take a photo? (enter y for yes or n for no): ")
-print("Enter p to take a photo, s to switch camera index, or q to quit: ")
+print("Enter p repeatedly to take photos repeatedly, s to switch camera index, or q to quit: ")
 
 
 while(photoYorN == 'y'):
@@ -110,16 +110,13 @@ while(photoYorN == 'y'):
             while(path.isfile("mission_img" + str(photoNum) + ".jpg")):
                 photoNum += 1
             check, frame = video_capture.read()
-            cv2.imshow("Capturing", frame)
             cv2.imwrite(filename="mission_img" + str(photoNum) + ".jpg", img=frame)
-            video_capture.release()
             img_new = cv2.imread("mission_img" + str(photoNum) + ".jpg", cv2.IMREAD_GRAYSCALE)
-            img_new = cv2.imshow("Captured Image", img_new)
+            img_new = cv2.imshow("mission_img" + str(photoNum) + ".jpg", img_new)
             cv2.waitKey(1000)
             print("Image Saved")
-            cv2.destroyAllWindows()
+            cv2.destroyWindow("mission_img" + str(photoNum) + ".jpg")
             photoNum += 1
-            break
 
         elif cv2.waitKey(1) & 0xFF == ord('q'):
         #quit video video stream
@@ -141,7 +138,7 @@ while(photoYorN == 'y'):
 
     #reprompt user
     photoYorN = input("Do you want to take a photo? (enter y for yes or n for no): ")
-    print("Enter p to take a photo or q to quit: ")
+    print("Enter p repeatedly to take photos repeatedly, s to switch camera index, or q to quit: ")
 
 # When everything is done, release the capture
 video_capture.release()
