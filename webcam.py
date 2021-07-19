@@ -23,9 +23,9 @@ log.basicConfig(filename='webcam.log',level=log.INFO)
 photoNum=1 #will hold the photo number so that program creates a unique picture file
 
 #allows user to set what camera they have connected that they wish to use
-camNum = "0"
+camNum = "0" #index of camera in operating system
 camNum = input("Enter the camera index for camera that will take photos (0 is builtin camera usually): ") 
-while(camNum.isdigit() == False):
+while(camNum.isdigit() == False): #repeat until user enters a digit 
       camNum=input("Enter a digit for camera index: ")
 
 #Initial prompt to user to enter video stream and instructions on taking photo
@@ -47,19 +47,21 @@ while(photoYorN == 'y'):
 
         #Motion Recognition
         #color frame for motion detection
-        check,color_frame = video_capture.read()
+        check,color_frame = video_capture.read() #get a frame from video 
         status = 0
-        gray = cv2.cvtColor(color_frame,cv2.COLOR_BGR2GRAY)
-        gray = cv2.GaussianBlur(gray,(21,21),0)
+        gray = cv2.cvtColor(color_frame,cv2.COLOR_BGR2GRAY) #convert frame to gray
+        gray = cv2.GaussianBlur(gray,(21,21),0) #sharpen edges and minimize blurs
 
+        #check to see if frame has been grabbed
         if first_frame is None:
             first_frame=gray
             continue
 
-        #frame which holds the difference between the two frames 
+        #frame which holds the difference between the color and gray frame 
         delta_frame = cv2.absdiff(first_frame,gray)
         thresh_frame = cv2.threshold(delta_frame,30,255,cv2.THRESH_BINARY)[1]
 
+        #highlight differences between frames
         thresh_frame = cv2.dilate(thresh_frame,None,iterations=3)
         (cnts,_) = cv2.findContours(thresh_frame.copy(),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 
@@ -69,7 +71,7 @@ while(photoYorN == 'y'):
                 continue
             status=1
             (x,y,w,h) = cv2.boundingRect(contour)
-            cv2.rectangle(color_frame,(x,y),(x+w,y+h),(0,0,255),2)
+            cv2.rectangle(color_frame,(x,y),(x+w,y+h),(0,0,255),2) #(0,0,255) are the colors making up rectangle color in BGR format
 
         #display motion frame
         cv2.imshow("Motion Frame", color_frame)
@@ -79,6 +81,7 @@ while(photoYorN == 'y'):
         # Capture frame-by-frame for face
         ret, frame = video_capture.read()
 
+        #convert frame to gray and rescale for processing
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         faces = faceCascade.detectMultiScale(
@@ -103,6 +106,7 @@ while(photoYorN == 'y'):
         if cv2.waitKey(1) & 0xFF == ord('p'): 
         #take photo, make sure to have "Faces Frame" stream selected with mouse
             #save photo file and display it. If a photo exists with that photoNum increment until a new unique file can be made
+            #Also quit video stream to reset it
             while(path.isfile("mission_img" + str(photoNum) + ".jpg")):
                 photoNum += 1
             check, frame = video_capture.read()
