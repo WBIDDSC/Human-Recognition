@@ -75,6 +75,8 @@ while(photoYorN == 'y'):
 
         #display motion frame
         cv2.imshow("Motion Frame", color_frame)
+        cv2.moveWindow("Motion Frame", 80, 150)
+
 
 
         #Any Human Face
@@ -102,6 +104,7 @@ while(photoYorN == 'y'):
 
         # Display the resulting frame
         cv2.imshow("Faces Frame", frame)
+        cv2.moveWindow("Faces Frame", 800, 150)
 
         if cv2.waitKey(1) & 0xFF == ord('p'): 
         #take photo, make sure to have "Faces Frame" stream selected with mouse
