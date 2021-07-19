@@ -6,9 +6,11 @@
 import cv2 #make sure to have opencv-python package installed (If not this can be done via "pip install opencv-python")
 import pandas #make sure to have the panda package installed (IF not this can be done via "pip install pandas")
 import sys
+import face_recognition
 import os.path
 import logging as log
 import datetime as dt
+import numpy as np
 from time import sleep
 from os import path
 
@@ -27,12 +29,12 @@ while(camNum.isdigit() == False):
       camNum=input("Enter a digit for camera index: ")
 
 #Initial prompt to user to enter video stream and instructions on taking photo
-photoYorN = input("Do you want to take a photo? (enter y for yes or n for no):")
+photoYorN = input("Do you want to take a photo? (enter y for yes or n for no): ")
 print("Enter p to take a photo, s to switch camera index, or q to quit: ")
+
 
 while(photoYorN == 'y'):
     #create live stream video feed object
-
     video_capture = cv2.VideoCapture(int(camNum))
     anterior = 0
 
@@ -43,6 +45,7 @@ while(photoYorN == 'y'):
             sleep(5)
             pass
 
+        #Motion Recognition
         #color frame for motion detection
         check,color_frame = video_capture.read()
         status = 0
@@ -72,6 +75,7 @@ while(photoYorN == 'y'):
         cv2.imshow("Motion Frame", color_frame)
 
 
+        #Any Human Face
         # Capture frame-by-frame for face
         ret, frame = video_capture.read()
 
@@ -86,7 +90,7 @@ while(photoYorN == 'y'):
 
         # Draw a rectangle around the faces
         for (x, y, w, h) in faces:
-            cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+            cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
 
         if anterior != len(faces):
             anterior = len(faces)
@@ -97,7 +101,8 @@ while(photoYorN == 'y'):
         cv2.imshow("Faces Frame", frame)
 
         if cv2.waitKey(1) & 0xFF == ord('p'): 
-        #take photo, make sure to have "Faces Frame" stream selected
+        #take photo, make sure to have "Faces Frame" stream selected with mouse
+            #save photo file and display it. If a photo exists with that photoNum increment until a new unique file can be made
             while(path.isfile("mission_img" + str(photoNum) + ".jpg")):
                 photoNum += 1
             check, frame = video_capture.read()
@@ -106,7 +111,7 @@ while(photoYorN == 'y'):
             video_capture.release()
             img_new = cv2.imread("mission_img" + str(photoNum) + ".jpg", cv2.IMREAD_GRAYSCALE)
             img_new = cv2.imshow("Captured Image", img_new)
-            cv2.waitKey(1650)
+            cv2.waitKey(1000)
             print("Image Saved")
             cv2.destroyAllWindows()
             photoNum += 1
@@ -131,7 +136,7 @@ while(photoYorN == 'y'):
             break
 
     #reprompt user
-    photoYorN = input("Do you want to take a photo? (enter y for yes or n for no):")
+    photoYorN = input("Do you want to take a photo? (enter y for yes or n for no): ")
     print("Enter p to take a photo or q to quit: ")
 
 # When everything is done, release the capture
