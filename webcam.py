@@ -30,7 +30,7 @@ while(camNum.isdigit() == False): #repeat until user enters a digit
 
 #Initial prompt to user to enter video stream and instructions on taking photo
 photoYorN = input("Do you want to take a photo? (enter y for yes or n for no): ")
-print("Enter p repeatedly to take photos repeatedly, s to switch camera index, or q to quit: ")
+print("Enter p for an individual photo, b for a burst of photos s to switch camera index, or q to quit: ")
 
 
 while(photoYorN == 'y'):
@@ -121,6 +121,19 @@ while(photoYorN == 'y'):
             cv2.destroyWindow("mission_img" + str(photoNum) + ".jpg")
             photoNum += 1
 
+        elif cv2.waitKey(1) & 0xFF == ord('b'):
+            for x in range(5):
+                while(path.isfile("mission_img" + str(photoNum) + ".jpg")):
+                    photoNum += 1
+                check, frame = video_capture.read()
+                cv2.imwrite("mission_img" + str(photoNum) + ".jpg", frame) 
+                img_new = cv2.imread("mission_img" + str(photoNum) + ".jpg", cv2.IMREAD_GRAYSCALE)
+                img_new = cv2.imshow("mission_img" + str(photoNum) + ".jpg", img_new)
+                cv2.waitKey(100)
+                cv2.destroyWindow("mission_img" + str(photoNum) + ".jpg")
+                sleep(1)
+                ret, frame = video_capture.read()
+
         elif cv2.waitKey(1) & 0xFF == ord('q'):
         #quit video video stream
             print("Turning off camera.")
@@ -128,6 +141,7 @@ while(photoYorN == 'y'):
             print("Camera off.")
             cv2.destroyAllWindows()
             break
+
         elif cv2.waitKey(1) & 0xFF == ord('s'):
         #quit video after getting new camera index
             print("Turning off currentcamera to switch to another.")
@@ -141,7 +155,7 @@ while(photoYorN == 'y'):
 
     #reprompt user
     photoYorN = input("Do you want to take a photo? (enter y for yes or n for no): ")
-    print("Enter p repeatedly to take photos repeatedly, s to switch camera index, or q to quit: ")
+    print("Enter p for an individual photo, b for a burst of photos s to switch camera index, or q to quit: ")
 
 # When everything is done, release the capture
 video_capture.release()
