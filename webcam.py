@@ -6,7 +6,6 @@
 import cv2 #make sure to have opencv-python package installed (If not this can be done via "pip install opencv-python")
 import pandas #make sure to have the panda package installed (IF not this can be done via "pip install pandas")
 import sys
-import face_recognition
 import os.path
 import logging as log
 import datetime as dt
