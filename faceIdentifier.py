@@ -15,7 +15,7 @@ import numpy as np
 video = cv2.VideoCapture(0)
 
 # Load a sample picture and learn how to recognize it.
-josh_image = face_recognition.load_image_file("joshFace.jpg")
+josh_image = face_recognition.load_image_file("Josh.jpg")
 josh_face_encoding = face_recognition.face_encodings(josh_image)[0]
 
 # Load a sample picture and learn how to recognize it.
@@ -30,18 +30,30 @@ hunter_face_encoding = face_recognition.face_encodings(hunter_image)[0]
 dalton_image = face_recognition.load_image_file("Dalton.jpg")
 dalton_face_encoding = face_recognition.face_encodings(dalton_image)[0]
 
+# Load a sample picture and learn how to recognize it.
+chris_image = face_recognition.load_image_file("Chris.jpg")
+chris_face_encoding = face_recognition.face_encodings(chris_image)[0]
+
+# Load a sample picture and learn how to recognize it.
+jason_image = face_recognition.load_image_file("Jason.jpg")
+jason_face_encoding = face_recognition.face_encodings(jason_image)[0]
+
 # Create arrays of known face encodings and their names
 known_face_encodings = [
     josh_face_encoding,
     willow_face_encoding,
     hunter_face_encoding,
-    dalton_face_encoding
+    dalton_face_encoding,
+    chris_face_encoding,
+    jason_face_encoding
 ]
 known_face_names = [
     "Josh",
     "Willow",
     "Hunter",
-    "Dalton"
+    "Dalton",
+    "Chris",
+    "Jason"
 ]
 
 # Initialize some variables
