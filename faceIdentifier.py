@@ -107,6 +107,22 @@ while True:
     # Display the resulting image
     cv2.imshow('Recognized', Rframe)
 
+    photoNum = 1
+    if cv2.waitKey(1) & 0xFF == ord('p'): 
+        #take photo, make sure to have "Faces Frame" stream selected with mouse
+            #save photo file and display it. If a photo exists with that photoNum increment until a new unique file can be made
+            #Also quit video stream to reset it
+        while(path.isfile("mission_img" + str(photoNum) + ".jpg")):
+            photoNum += 1
+        check, frame = video_capture.read()
+        cv2.imwrite(filename="mission_img" + str(photoNum) + ".jpg", img=frame)
+        img_new = cv2.imread("mission_img" + str(photoNum) + ".jpg", cv2.IMREAD_GRAYSCALE)
+        img_new = cv2.imshow("mission_img" + str(photoNum) + ".jpg", img_new)
+        cv2.waitKey(1000)
+        print("Image Saved")
+        cv2.destroyWindow("mission_img" + str(photoNum) + ".jpg")
+        photoNum += 1
+
     # Hit 'q' on the keyboard to quit!
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
